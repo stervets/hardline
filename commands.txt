@@ -1,0 +1,22 @@
+docker exec -it hardline-asterisk asterisk -rx "pjsip reload"
+docker exec -it hardline-asterisk bash -lc 'sqlite3 /data/sqlite/app.db'
+docker exec -it hardline-asterisk asterisk -rvvv
+pjsip set logger on
+docker exec -it hardline-asterisk asterisk -rx "core reload"
+docker exec -it hardline-asterisk asterisk -rx "core show codecs"
+docker exec -it hardline-asterisk asterisk -rx "pjsip show contacts"
+docker restart hardline-asterisk
+
+
+
+# 1) полный дамп (с данными)
+docker exec -it hardline-asterisk bash -lc \
+'sqlite3 /data/sqlite/app.db ".dump" > /data/sqlite/app.dump.sql'
+
+# 2) только схема
+docker exec -it hardline-asterisk bash -lc \
+'sqlite3 /data/sqlite/app.db ".schema" > /data/sqlite/app.schema.sql'
+
+# 3) бинарный бэкап (самый надёжный)
+docker exec -it hardline-asterisk bash -lc \
+'sqlite3 /data/sqlite/app.db ".backup /data/sqlite/app.backup.db"'
