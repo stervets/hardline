@@ -1,34 +1,39 @@
 services:
   asterisk:
+    user: "0:0"
     build:
       context: .
       dockerfile: ./asterisk/Dockerfile
     container_name: hardline-asterisk
     restart: unless-stopped
+
     ports:
       - "${SIP_UDP_PORT:-5060}:5060/udp"
       - "${ARI_HTTP_PORT:-8088}:8088/tcp"
       - "10000-10500:10000-10500/udp"
+
     volumes:
+      # core asterisk configs
       - ./asterisk/conf/pjsip.conf:/etc/asterisk/pjsip.conf:ro
       - ./asterisk/conf/extensions.conf:/etc/asterisk/extensions.conf:ro
-      - ./asterisk/conf/http.conf:/etc/asterisk/http.conf:ro
-      - ./asterisk/conf/ari.conf:/etc/asterisk/ari.conf:ro
-      - ./asterisk/conf/modules.conf:/etc/asterisk/modules.conf:ro
+      - ./asterisk/conf/logger.conf:/etc/asterisk/logger.conf:ro
       - ./asterisk/conf/rtp.conf:/etc/asterisk/rtp.conf:ro
+      - ./asterisk/conf/modules.conf:/etc/asterisk/modules.conf:ro
+      - ./asterisk/conf/ari.conf:/etc/asterisk/ari.conf:ro
+      - ./asterisk/conf/http.conf:/etc/asterisk/http.conf:ro
+      - ./asterisk/conf/asterisk.conf:/etc/asterisk/asterisk.conf:ro
 
-      # realtime/odbc
+      # realtime / odbc (ASTERISK side)
       - ./asterisk/conf/res_odbc.conf:/etc/asterisk/res_odbc.conf:ro
       - ./asterisk/conf/extconfig.conf:/etc/asterisk/extconfig.conf:ro
       - ./asterisk/conf/sorcery.conf:/etc/asterisk/sorcery.conf:ro
 
-      # odbc ini
+      # unixODBC (SYSTEM side)
       - ./asterisk/odbc/odbc.ini:/etc/odbc.ini:ro
       - ./asterisk/odbc/odbcinst.ini:/etc/odbcinst.ini:ro
 
-      # база
+      # data
       - ./data/sqlite:/data/sqlite
-
       - ./data-asterisk/logs:/var/log/asterisk
       - ./data-asterisk/spool:/var/spool/asterisk
 
