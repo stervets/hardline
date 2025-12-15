@@ -1,0 +1,81 @@
+####################################
+# OS / Editor
+####################################
+.DS_Store
+Thumbs.db
+
+.idea/
+.vscode/
+*.swp
+*.swo
+
+####################################
+# Node / Yarn
+####################################
+node_modules/
+.yarn/*
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+
+.pnp.*
+.yarnrc.yml
+
+####################################
+# Build output
+####################################
+dist/
+build/
+.out/
+coverage/
+*.log
+
+####################################
+# Env / Secrets
+####################################
+.env
+.env.*
+!.env.example
+
+####################################
+# SQLite
+####################################
+*.sqlite
+*.sqlite3
+*.db
+data/sqlite/*
+!data/sqlite/.gitkeep
+
+####################################
+# Docker
+####################################
+**/Dockerfile.dev
+**/Dockerfile.prod
+
+####################################
+# Asterisk runtime
+####################################
+data-asterisk/logs/*
+data-asterisk/spool/*
+!data-asterisk/logs/.gitkeep
+!data-asterisk/spool/.gitkeep
+
+####################################
+# Asterisk generated / volatile
+####################################
+asterisk/tmp/
+asterisk/run/
+asterisk/astdb
+
+####################################
+# PM2 / runtime
+####################################
+pm2.log
+pids/
+
+####################################
+# Misc
+####################################
+npm-debug.log*
+yarn-error.log*
