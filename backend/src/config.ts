@@ -10,11 +10,17 @@ export const config = {
   extMin: 99010,
   extMax: 99998,
 
+  ari: {
+    url: process.env.ARI_URL || 'http://asterisk:8088/ari',
+    user: process.env.ARI_USER || 'ari',
+    pass: process.env.ARI_PASS || 'ari_pass',
+    app: process.env.ARI_APP || 'hardline',
+  },
+
   defaults: {
-    context: 'phones',
+    context: 'hardline',
     disallow: 'all',
-    // один кодек, без зоопарка
-    allow: 'opus',
+    allow: 'opus,gsm,ulaw',
     direct_media: 'no',
     rtp_symmetric: 'yes',
     force_rport: 'yes',

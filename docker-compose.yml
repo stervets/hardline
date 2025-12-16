@@ -36,6 +36,10 @@ services:
       - ./data/sqlite:/data/sqlite
       - ./data-asterisk/logs:/var/log/asterisk
       - ./data-asterisk/spool:/var/spool/asterisk
+      - ./data/sounds:/var/lib/asterisk/sounds/main:ro
+
+    networks:
+      - hardline
 
   backend:
     build:
