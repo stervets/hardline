@@ -47,5 +47,41 @@ export function initDb() {
                                               rewrite_contact TEXT,
                                               timers TEXT
     );
+
+    -- Contacts are created/updated by Asterisk registrar during REGISTER/UNREGISTER.
+    -- Keep the schema permissive: SQLite types are flexible, and Asterisk versions
+    -- sometimes add new columns (e.g. prune_on_boot / qualify_2xx_only).
+    CREATE TABLE IF NOT EXISTS ps_contacts (
+                                            id TEXT PRIMARY KEY,
+                                            uri TEXT,
+                                            expiration_time INTEGER,
+                                            qualify_frequency INTEGER,
+                                            qualify_timeout REAL,
+                                            qualify_2xx_only TEXT,
+                                            outbound_proxy TEXT,
+                                            path TEXT,
+                                            user_agent TEXT,
+                                            endpoint TEXT,
+                                            reg_server TEXT,
+                                            authenticate_qualify TEXT,
+                                            prune_on_boot TEXT,
+                                            via_addr TEXT,
+                                            via_port INTEGER,
+                                            call_id TEXT
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_ps_contacts_endpoint ON ps_contacts(endpoint);
+    CREATE INDEX IF NOT EXISTS idx_ps_contacts_exp_time ON ps_contacts(expiration_time);
+
+    -- Optional: identify endpoints by source IP / header.
+    CREATE TABLE IF NOT EXISTS ps_endpoint_id_ips (
+                                                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                                    endpoint TEXT NOT NULL,
+                                                    match TEXT,
+                                                    match_header TEXT,
+                                                    srv_lookups TEXT
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_ps_endpoint_id_ips_endpoint ON ps_endpoint_id_ips(endpoint);
   `);
 }

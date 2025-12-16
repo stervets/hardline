@@ -13,7 +13,8 @@ export const config = {
   defaults: {
     context: 'phones',
     disallow: 'all',
-    allow: 'opus,ulaw,alaw',
+    // один кодек, без зоопарка
+    allow: 'opus',
     direct_media: 'no',
     rtp_symmetric: 'yes',
     force_rport: 'yes',
