@@ -60,13 +60,13 @@ export class FreeSwitchController {
       xmlHeader +
       `<document type="freeswitch/xml">
   <section name="directory">
-    <domain name="default">
+    <domain name="${escapeXml(config.domain)}">
       <user id="${user.ext}">
         <params>
           <param name="password" value="${pass}"/>
         </params>
         <variables>
-          <variable name="user_context" value="default"/>
+          <variable name="user_context" value="${escapeXml(config.userContext)}"/>
           <variable name="effective_caller_id_name" value="${name}"/>
           <variable name="effective_caller_id_number" value="${user.ext}"/>
         </variables>
@@ -80,15 +80,19 @@ export class FreeSwitchController {
   private dialplan() {
     const svcEcho = config.svcEcho; // 99990
     const svcPlayback = config.svcPlayback; // 99999
-
-    // Файл, который реально монтируется в контейнер
     const playbackFile = '/var/lib/freeswitch/sounds/custom/hello.opus';
 
     return (
       xmlHeader +
       `<document type="freeswitch/xml">
   <section name="dialplan">
-    <context name="default">
+    <context name="${escapeXml(config.userContext)}">
+
+      <extension name="reserved_star">
+        <condition field="destination_number" expression="^\\*(00[0-9]|999)$">
+          <action application="hangup" data="CALL_REJECTED"/>
+        </condition>
+      </extension>
 
       <extension name="users">
         <condition field="destination_number" expression="^(99\\d{3})$">

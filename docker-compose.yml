@@ -18,7 +18,7 @@ services:
       - ./freeswitch/conf/autoload_configs/modules.conf.xml:/usr/share/freeswitch/conf/vanilla/autoload_configs/modules.conf.xml:ro
       - ./freeswitch/conf/autoload_configs/signalwire.conf.xml:/usr/share/freeswitch/conf/vanilla/autoload_configs/signalwire.conf.xml:ro
       - ./freeswitch/conf/autoload_configs/event_socket.conf.xml:/usr/share/freeswitch/conf/vanilla/autoload_configs/event_socket.conf.xml:ro
-
+      - ./freeswitch/conf/dialplan:/usr/share/freeswitch/conf/vanilla/dialplan:ro
     networks:
       - hardline
     command: ["freeswitch", "-nonat", "-nf"]
@@ -42,6 +42,7 @@ services:
       - SQLITE_PATH=${SQLITE_PATH}
       - FS_HOST=freeswitch
       - FS_SIP_PORT=5060
+      - HARDLINE_DOMAIN=hardline.local
       # если у тебя backend реально использует другой URL/параметры — вернёшь свои
     volumes:
       - ./backend:/app
@@ -69,6 +70,7 @@ services:
       - SQLITE_PATH=${SQLITE_PATH}
       - FS_HOST=freeswitch
       - FS_SIP_PORT=5060
+      - HARDLINE_DOMAIN=hardline.local
     volumes:
       - ./data/sqlite:/data/sqlite
     networks:

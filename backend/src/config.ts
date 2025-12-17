@@ -7,4 +7,7 @@ export const config = {
 
   svcEcho: 99990,
   svcPlayback: 99999,
+
+  domain: process.env.HARDLINE_DOMAIN || 'hardline.local',
+  userContext: 'hardline',
 };
