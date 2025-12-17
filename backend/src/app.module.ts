@@ -1,13 +1,9 @@
 import { Module } from '@nestjs/common';
 import { BootstrapController } from './bootstrap/bootstrap.controller';
 import { DirectoryController } from './directory/directory.controller';
-import { AriService } from './ari/ari.service';
+import { FreeSwitchController } from './freeswitch/freeswitch.controller';
 
 @Module({
-  controllers: [BootstrapController, DirectoryController],
-  providers: [
-    AriService,
-    // ...
-  ],
+  controllers: [BootstrapController, DirectoryController, FreeSwitchController],
 })
 export class AppModule {}

@@ -1,2 +1,2 @@
 #!/usr/bin/bash
-docker compose --profile dev up --build
+BACKEND_TARGET=dev NODE_ENV=development docker compose up -d --build

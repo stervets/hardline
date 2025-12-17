@@ -1,14 +1,14 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { bootstrapUser } from './bootstrap.service';
+import { registerUser } from './bootstrap.service';
 
 @Controller()
 export class BootstrapController {
-  @Post('/bootstrap')
-  bootstrap(@Body() body: any) {
-    return bootstrapUser({
+  @Post('/register')
+  register(@Body() body: any) {
+    return registerUser({
       serverPassword: body.serverPassword,
       displayName: body.displayName,
-      password: body.password,
+      sipPassword: body.sipPassword,
     });
   }
 }

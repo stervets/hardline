@@ -1,96 +1,35 @@
 services:
-  asterisk:
-    user: "0:0"
-    build:
-      context: .
-      dockerfile: ./asterisk/Dockerfile
-    container_name: hardline-asterisk
+  freeswitch:
+    image: safarov/freeswitch:1.10.12
+    container_name: hardline-freeswitch
     restart: unless-stopped
-
     ports:
       - "${SIP_UDP_PORT:-5060}:5060/udp"
-      - "${ARI_HTTP_PORT:-8088}:8088/tcp"
-      - "10000-10500:10000-10500/udp"
-
+      - "16384-32768:16384-32768/udp"
     volumes:
-      # core asterisk configs
-      - ./asterisk/conf/pjsip.conf:/etc/asterisk/pjsip.conf:ro
-      - ./asterisk/conf/extensions.conf:/etc/asterisk/extensions.conf:ro
-      - ./asterisk/conf/logger.conf:/etc/asterisk/logger.conf:ro
-      - ./asterisk/conf/rtp.conf:/etc/asterisk/rtp.conf:ro
-      - ./asterisk/conf/modules.conf:/etc/asterisk/modules.conf:ro
-      - ./asterisk/conf/ari.conf:/etc/asterisk/ari.conf:ro
-      - ./asterisk/conf/http.conf:/etc/asterisk/http.conf:ro
-      - ./asterisk/conf/asterisk.conf:/etc/asterisk/asterisk.conf:ro
-
-      # realtime / odbc (ASTERISK side)
-      - ./asterisk/conf/res_odbc.conf:/etc/asterisk/res_odbc.conf:ro
-      - ./asterisk/conf/extconfig.conf:/etc/asterisk/extconfig.conf:ro
-      - ./asterisk/conf/sorcery.conf:/etc/asterisk/sorcery.conf:ro
-
-      # unixODBC (SYSTEM side)
-      - ./asterisk/odbc/odbc.ini:/etc/odbc.ini:ro
-      - ./asterisk/odbc/odbcinst.ini:/etc/odbcinst.ini:ro
-
-      # data
-      - ./data/sqlite:/data/sqlite
-      - ./data-asterisk/logs:/var/log/asterisk
-      - ./data-asterisk/spool:/var/spool/asterisk
-      - ./data/sounds:/var/lib/asterisk/sounds/main:ro
-
+      - ./data/sounds:/var/lib/freeswitch/sounds/custom:ro
+      #- ./freeswitch/conf/autoload_configs/xml_curl.conf.xml:/etc/freeswitch/autoload_configs/xml_curl.conf.xml:ro
     networks:
       - hardline
+    command: ["freeswitch", "-nonat", "-nf"]
 
   backend:
     build:
       context: ./backend
-      target: dev
-    profiles: [ "dev" ]
-    container_name: hardline-backend-dev
-    restart: unless-stopped
-    depends_on:
-      - asterisk
-    ports:
-      - "${API_PORT:-3000}:3000"
-    environment:
-      - NODE_ENV=development
-      - PUBLIC_HOST=${PUBLIC_HOST}
-      - SERVER_PASSWORD=${SERVER_PASSWORD}
-      - JWT_SECRET=${JWT_SECRET}
-      - SQLITE_PATH=${SQLITE_PATH}
-      - ARI_URL=http://asterisk:8088/ari
-      - ARI_USER=${ARI_USER}
-      - ARI_PASS=${ARI_PASS}
-      - AST_HOST=asterisk
-    volumes:
-      - ./backend:/app
-      - ./data/sqlite:/data/sqlite
-    networks:
-      - hardline
-
-  backend-prod:
-    build:
-      context: ./backend
-      target: prod
-    profiles: [ "prod" ]
+      target: ${BACKEND_TARGET:-dev}
     container_name: hardline-backend
     restart: unless-stopped
     depends_on:
-      - asterisk
+      - freeswitch
     ports:
       - "${API_PORT:-3000}:3000"
     environment:
-      - NODE_ENV=production
-      - PUBLIC_HOST=${PUBLIC_HOST}
+      - NODE_ENV=${NODE_ENV:-development}
       - SERVER_PASSWORD=${SERVER_PASSWORD}
-      - JWT_SECRET=${JWT_SECRET}
-      - SQLITE_PATH=${SQLITE_PATH}
-      - ARI_URL=http://asterisk:8088/ari
-      - ARI_USER=${ARI_USER}
-      - ARI_PASS=${ARI_PASS}
-      - AST_HOST=asterisk
+      - REGISTRY_PATH=/data/registry.json
     volumes:
-      - ./data/sqlite:/data/sqlite
+      - ./backend:/app
+      - ./data:/data
     networks:
       - hardline
 

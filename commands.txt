@@ -1,37 +1,8 @@
-docker exec -it hardline-asterisk asterisk -rx "pjsip reload"
-docker exec -it hardline-asterisk bash -lc 'sqlite3 /data/sqlite/app.db'
-docker exec -it hardline-asterisk asterisk -rvvvvv
-pjsip set logger on
-docker exec -it hardline-asterisk asterisk -rx "core reload"
-docker exec -it hardline-asterisk asterisk -rx "core show codecs"
-docker exec -it hardline-asterisk asterisk -rx "pjsip show contacts"
-docker exec -it hardline-asterisk asterisk -rx "pjsip show aors"
-docker restart hardline-asterisk
-
-# 1) полный дамп (с данными)
-docker exec -it hardline-asterisk bash -lc \
-'sqlite3 /data/sqlite/app.db ".dump" > /data/sqlite/app.dump.sql'
-
-# 2) только схема
-docker exec -it hardline-asterisk bash -lc \
-'sqlite3 /data/sqlite/app.db ".schema" > /data/sqlite/app.schema.sql'
-
-# 3) бинарный бэкап (самый надёжный)
-docker exec -it hardline-asterisk bash -lc \
-'sqlite3 /data/sqlite/app.db ".backup /data/sqlite/app.backup.db"'
+docker exec -it hardline-freeswitch bash -lc
+docker restart hardline-freeswitch
 
 git add --renormalize .
 
-curl -X POST http://localhost:3000/bootstrap \
-  -H "Content-Type: application/json" \
-  -d '{
-    "serverPassword": "123123",
-    "displayName": "Mmm",
-    "password": "111"
-  }'
-
-
-  ffmpeg -i hardline.mp3 -c:a libopus -ar 48000 -ac 1 hardline.opus
-  ffmpeg -i hardline.mp3 -ar 8000 -ac 1 hardline.gsm
-  ffmpeg -i hardline.mp3 -ar 8000 -ac 1 -c:a pcm_mulaw hardline.wav
-
+ffmpeg -i hardline.mp3 -c:a libopus -ar 48000 -ac 1 hardline.opus
+ffmpeg -i hardline.mp3 -ar 8000 -ac 1 hardline.gsm
+ffmpeg -i hardline.mp3 -ar 8000 -ac 1 -c:a pcm_mulaw hardline.wav
