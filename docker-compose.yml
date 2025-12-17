@@ -3,12 +3,22 @@ services:
     image: safarov/freeswitch:1.10.12
     container_name: hardline-freeswitch
     restart: unless-stopped
+    cap_add:
+      - SYS_NICE
+    ulimits:
+      rtprio: 99
     ports:
       - "${SIP_UDP_PORT:-5060}:5060/udp"
-      - "16384-32768:16384-32768/udp"
+      - "20000-20100:20000-20100/udp"
     volumes:
       - ./data/sounds:/var/lib/freeswitch/sounds/custom:ro
-      #- ./freeswitch/conf/autoload_configs/xml_curl.conf.xml:/etc/freeswitch/autoload_configs/xml_curl.conf.xml:ro
+
+      - ./freeswitch/conf/autoload_configs/xml_curl.conf.xml:/usr/share/freeswitch/conf/vanilla/autoload_configs/xml_curl.conf.xml:ro
+      - ./freeswitch/conf/autoload_configs/switch.conf.xml:/usr/share/freeswitch/conf/vanilla/autoload_configs/switch.conf.xml:ro
+      - ./freeswitch/conf/autoload_configs/modules.conf.xml:/usr/share/freeswitch/conf/vanilla/autoload_configs/modules.conf.xml:ro
+      - ./freeswitch/conf/autoload_configs/signalwire.conf.xml:/usr/share/freeswitch/conf/vanilla/autoload_configs/signalwire.conf.xml:ro
+      - ./freeswitch/conf/autoload_configs/event_socket.conf.xml:/usr/share/freeswitch/conf/vanilla/autoload_configs/event_socket.conf.xml:ro
+
     networks:
       - hardline
     command: ["freeswitch", "-nonat", "-nf"]
@@ -16,7 +26,35 @@ services:
   backend:
     build:
       context: ./backend
-      target: ${BACKEND_TARGET:-dev}
+      target: dev
+    profiles: ["dev"]
+    container_name: hardline-backend-dev
+    restart: unless-stopped
+    depends_on:
+      - freeswitch
+    ports:
+      - "${API_PORT:-3000}:3000"
+    environment:
+      - NODE_ENV=development
+      - PUBLIC_HOST=${PUBLIC_HOST}
+      - SERVER_PASSWORD=${SERVER_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - SQLITE_PATH=${SQLITE_PATH}
+      - FS_HOST=freeswitch
+      - FS_SIP_PORT=5060
+      # если у тебя backend реально использует другой URL/параметры — вернёшь свои
+    volumes:
+      - ./backend:/app
+      - ./data/sqlite:/data/sqlite
+    networks:
+      - hardline
+    command: ["yarn", "run", "dev"]
+
+  backend-prod:
+    build:
+      context: ./backend
+      target: prod
+    profiles: ["prod"]
     container_name: hardline-backend
     restart: unless-stopped
     depends_on:
@@ -24,12 +62,15 @@ services:
     ports:
       - "${API_PORT:-3000}:3000"
     environment:
-      - NODE_ENV=${NODE_ENV:-development}
+      - NODE_ENV=production
+      - PUBLIC_HOST=${PUBLIC_HOST}
       - SERVER_PASSWORD=${SERVER_PASSWORD}
-      - REGISTRY_PATH=/data/registry.json
+      - JWT_SECRET=${JWT_SECRET}
+      - SQLITE_PATH=${SQLITE_PATH}
+      - FS_HOST=freeswitch
+      - FS_SIP_PORT=5060
     volumes:
-      - ./backend:/app
-      - ./data:/data
+      - ./data/sqlite:/data/sqlite
     networks:
       - hardline
 
