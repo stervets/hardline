@@ -38,15 +38,13 @@ services:
       - NODE_ENV=development
       - PUBLIC_HOST=${PUBLIC_HOST}
       - SERVER_PASSWORD=${SERVER_PASSWORD}
-      - JWT_SECRET=${JWT_SECRET}
-      - SQLITE_PATH=${SQLITE_PATH}
       - FS_HOST=freeswitch
       - FS_SIP_PORT=5060
       - HARDLINE_DOMAIN=hardline.local
       # если у тебя backend реально использует другой URL/параметры — вернёшь свои
     volumes:
       - ./backend:/app
-      - ./data/sqlite:/data/sqlite
+      - ./data:/data
     networks:
       - hardline
     command: ["yarn", "run", "dev"]
@@ -66,13 +64,11 @@ services:
       - NODE_ENV=production
       - PUBLIC_HOST=${PUBLIC_HOST}
       - SERVER_PASSWORD=${SERVER_PASSWORD}
-      - JWT_SECRET=${JWT_SECRET}
-      - SQLITE_PATH=${SQLITE_PATH}
       - FS_HOST=freeswitch
       - FS_SIP_PORT=5060
       - HARDLINE_DOMAIN=hardline.local
     volumes:
-      - ./data/sqlite:/data/sqlite
+      - ./data:/data
     networks:
       - hardline
 

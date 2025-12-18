@@ -1,4 +1,20 @@
 {
-  "nextExt": 99000,
-  "users": []
+  "nextExt": 99003,
+  "users": [
+    {
+      "ext": 99002,
+      "name": "MAdmin",
+      "sipPassword": "111"
+    },
+    {
+      "ext": 99001,
+      "name": "MAdmin",
+      "sipPassword": "111"
+    },
+    {
+      "ext": 99000,
+      "name": "123",
+      "sipPassword": "123"
+    }
+  ]
 }
