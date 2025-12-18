@@ -23,7 +23,7 @@ export default {
       });
 
       this.result = await r.json();
-      (window as any).Hardline?.register?.(this.result);
+      (window as any).Hardline?.register?.(this.result?.sip);
     },
 
     call(this: any) {

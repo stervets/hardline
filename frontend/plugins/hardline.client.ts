@@ -28,5 +28,5 @@ export default defineNuxtPlugin(() => {
   };
 
   (window as any).onHardlineEvent = (e: any) =>
-    console.log('[Hardline event]', e);
+    console.log('[Hardline event]', JSON.stringify(e, null, 2));
 });
