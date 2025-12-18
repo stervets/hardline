@@ -8,7 +8,7 @@ export const config = {
   svcEcho: 99990,
   svcPlayback: 99999,
 
-  host: process.env.HARDLINE_HOST || process.env.HARDLINE_DOMAIN || '10.0.2.2',
+  host: process.env.HARDLINE_HOST || '10.0.2.2',
   realm: process.env.HARDLINE_REALM || 'hardline.local',
 
   userContext: 'hardline',

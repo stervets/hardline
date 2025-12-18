@@ -1,50 +1,30 @@
 {
-  "nextExt": 99010,
+  "nextExt": 99006,
   "users": [
     {
-      "ext": 99009,
-      "name": "zzz1",
-      "sipPassword": "xxx1"
-    },
-    {
-      "ext": 99008,
-      "name": "zzz",
-      "sipPassword": "xxx"
-    },
-    {
-      "ext": 99007,
-      "name": "opo",
-      "sipPassword": "pop"
-    },
-    {
-      "ext": 99006,
-      "name": "ooo",
-      "sipPassword": "ppp"
-    },
-    {
       "ext": 99005,
-      "name": "kkk",
-      "sipPassword": "lll"
+      "name": "ll1",
+      "sipPassword": "ll2"
     },
     {
       "ext": 99004,
-      "name": "aaa",
-      "sipPassword": "bbb"
+      "name": "ff1",
+      "sipPassword": "fff"
     },
     {
       "ext": 99003,
-      "name": "tyu",
-      "sipPassword": "zxczxc"
+      "name": "zxc21",
+      "sipPassword": "asd31"
     },
     {
       "ext": 99002,
-      "name": "nnn",
-      "sipPassword": "zzz"
+      "name": "zxc2",
+      "sipPassword": "asd3"
     },
     {
       "ext": 99001,
-      "name": "555",
-      "sipPassword": "123"
+      "name": "zxc",
+      "sipPassword": "asd"
     },
     {
       "ext": 99000,

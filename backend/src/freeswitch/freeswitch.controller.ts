@@ -1,4 +1,4 @@
-import { Body, Controller, Header, Post } from '@nestjs/common';
+import { Body, Controller, Header, HttpCode, Post } from '@nestjs/common';
 import { config } from '../config';
 import { readRegistry } from '../registry';
 
@@ -42,6 +42,18 @@ const pick = (body: any, ...keys: string[]) => {
   return null;
 };
 
+const splitUserAtDomain = (raw: string | null) => {
+  if (!raw)
+    return { user: null as string | null, domain: null as string | null };
+  const s = String(raw).trim();
+  if (!s) return { user: null, domain: null };
+  const at = s.indexOf('@');
+  if (at < 0) return { user: s, domain: null };
+  const user = s.slice(0, at).trim() || null;
+  const domain = s.slice(at + 1).trim() || null;
+  return { user, domain };
+};
+
 const pickKV = (body: any, wantedKey: string) => {
   const key = asString(body?.key);
   if (!key) return null;
@@ -52,13 +64,11 @@ const pickKV = (body: any, wantedKey: string) => {
 @Controller()
 export class FreeSwitchController {
   @Post('/freeswitch/xml')
+  @HttpCode(200) // <-- ДОБАВЬ ЭТО
   @Header('Content-Type', 'text/xml; charset=utf-8')
   handle(@Body() body: any) {
     const section =
-      pick(body, 'section') ??
-      pickKV(body, 'section') ??
-      // иногда section прилетает через Event-Subclass/Caller-Context — но нам хватит дефолта
-      'unknown';
+      pick(body, 'section') ?? pickKV(body, 'section') ?? 'unknown';
 
     if (section === 'directory') return this.directory(body);
     if (section === 'dialplan') return this.dialplan();
@@ -71,19 +81,31 @@ export class FreeSwitchController {
 
   private directory(body: any) {
     // 1) userId: прямые поля
-    const directUser =
-      pick(body, 'user', 'username', 'id', 'sip_auth_username', 'auth_user');
+    const directUser = pick(
+      body,
+      'user',
+      'username',
+      'id',
+      'sip_auth_username',
+      'auth_user',
+    );
 
     // 2) userId: key/key_value пара
     const kvUser =
       pickKV(body, 'user') ?? pickKV(body, 'username') ?? pickKV(body, 'id');
 
     // 3) иногда подсовывают "Caller-Caller-ID-Number"/"from_user" — берём только если совсем нет другого
-    const fallbackUser =
-      pick(body, 'from_user', 'Caller-Caller-ID-Number', 'caller_id_number');
+    const fallbackUser = pick(
+      body,
+      'from_user',
+      'Caller-Caller-ID-Number',
+      'caller_id_number',
+    );
 
     const userIdRaw = directUser ?? kvUser ?? fallbackUser ?? null;
-    const ext = asNumber(userIdRaw);
+    const { user: userOnly, domain: domainFromUser } =
+      splitUserAtDomain(userIdRaw);
+    const ext = asNumber(userOnly);
 
     // domain/realm:
     const directDomain = pick(
@@ -104,11 +126,10 @@ export class FreeSwitchController {
       pickKV(body, 'sip_realm');
 
     // если FS сам решил доменом быть контейнерным IP — он как раз здесь всплывёт
-    const domain = (directDomain ?? kvDomain ?? config.realm)!;
-
-    // лог — оставь пока, это твой “осциллограф”
-    // eslint-disable-next-line no-console
-    console.log('[xml_curl]', { section: 'directory', userId: userIdRaw, ext, domain });
+    const domain = (directDomain ??
+      kvDomain ??
+      domainFromUser ??
+      config.realm)!;
 
     if (!ext) return this.notFound();
 
