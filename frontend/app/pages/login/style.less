@@ -1,0 +1,44 @@
+.hl-login {
+  position: relative;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.hl-bg {
+  background:
+          radial-gradient(900px 900px at 10% 10%, rgba(195, 98, 0, 0.35), transparent 50%),
+          radial-gradient(700px 700px at 80% 40%, rgba(16, 185, 129, 0.25), transparent 55%),
+          radial-gradient(900px 900px at 50% 80%, rgba(16, 0, 128, 0.16), transparent 65%),
+          #09031b;
+  filter: saturate(1.05);
+}
+
+.hl-card {
+  background: rgba(18, 24, 41, 0.52);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(14px);
+}
+
+.hl-badge {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* Element Plus tweaks (без фанатизма) */
+.hl-login :deep(.el-form-item__label) {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.hl-login :deep(.el-input__wrapper) {
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: none;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+.hl-login :deep(.el-input__wrapper.is-focus) {
+  border-color: rgba(99, 102, 241, 0.6);
+}
+
+.hl-login :deep(.el-checkbox__label) {
+  color: rgba(255, 255, 255, 0.72);
+}

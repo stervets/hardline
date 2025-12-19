@@ -1,8 +1,7 @@
 <template>
-  <div class="wrap">
+  <div class="wrap" style="background-color: antiquewhite">
     <h1>Hardline</h1>
 
-    <input v-model="serverPassword" placeholder="Server password" />
     <input v-model="displayName" placeholder="Display name" />
     <input v-model="sipPassword" placeholder="SIP password" />
 

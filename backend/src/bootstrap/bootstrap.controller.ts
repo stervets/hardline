@@ -6,7 +6,6 @@ export class BootstrapController {
   @Post('/register')
   register(@Body() body: any) {
     return registerUser({
-      serverPassword: body.serverPassword,
       displayName: body.displayName,
       sipPassword: body.sipPassword,
     });

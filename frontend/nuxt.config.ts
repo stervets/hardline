@@ -10,4 +10,10 @@ export default defineNuxtConfig({
   plugins: [
     {src: './plugins/hardline.client.ts', mode: 'client'},
   ],
+
+  modules: [
+    '@nuxtjs/tailwindcss',
+    '@nuxtjs/color-mode',
+    '@element-plus/nuxt',
+  ],
 })

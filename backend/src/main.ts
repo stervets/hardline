@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import { AppModule } from 'src/app/app.module';
 import { urlencoded } from 'express';
 
 async function bootstrap() {

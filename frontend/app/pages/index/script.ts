@@ -1,7 +1,6 @@
 export default {
   setup() {
     return {
-      serverPassword: '',
       displayName: '',
       sipPassword: '',
       result: null as any,
@@ -16,7 +15,6 @@ export default {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          serverPassword: this.serverPassword,
           displayName: this.displayName,
           sipPassword: this.sipPassword,
         }),
@@ -27,6 +25,7 @@ export default {
     },
 
     call(this: any) {
+      console.log(11, (window as any).Hardline);
       (window as any).Hardline?.call?.(this.toCall);
     },
 
