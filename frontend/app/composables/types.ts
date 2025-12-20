@@ -17,6 +17,8 @@ export type Application = {
     state: ApplicationState;
     store: ApplicationStore;
     route: (link: string) => void;
+
+    serverRequest: (endPoint: string, ...args: any[])=>Promise<any>;
 }
 
 export type User = { phone: number; password: string; name: string };

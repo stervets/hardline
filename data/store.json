@@ -1,0 +1,14 @@
+{
+  "users": [
+    {
+      "phone": 99001,
+      "name": "zxc",
+      "password": "asd"
+    },
+    {
+      "phone": 99000,
+      "name": "Mike Admin",
+      "password": "123"
+    }
+  ]
+}

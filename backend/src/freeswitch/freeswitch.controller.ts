@@ -1,6 +1,5 @@
 import { Body, Controller, Header, HttpCode, Post } from '@nestjs/common';
 import { config } from '../config';
-import { readRegistry } from '../registry';
 
 const xmlHeader = `<?xml version="1.0" encoding="UTF-8"?>\n`;
 
@@ -133,26 +132,25 @@ export class FreeSwitchController {
 
     if (!ext) return this.notFound();
 
-    const reg = readRegistry();
-    const user = reg.users.find((u) => u.ext === ext);
+    const user = config.store.users.find((u) => u.phone === ext);
     if (!user) return this.notFound();
 
-    const name = escapeXml(user.name || `${user.ext}`);
-    const pass = escapeXml(user.sipPassword);
+    const name = escapeXml(user.name || `${user.phone}`);
+    const pass = escapeXml(user.password);
 
     return (
       xmlHeader +
       `<document type="freeswitch/xml">
   <section name="directory">
     <domain name="${escapeXml(domain)}">
-      <user id="${user.ext}">
+      <user id="${user.phone}">
         <params>
           <param name="password" value="${pass}"/>
         </params>
         <variables>
           <variable name="user_context" value="${escapeXml(config.userContext)}"/>
           <variable name="effective_caller_id_name" value="${name}"/>
-          <variable name="effective_caller_id_number" value="${user.ext}"/>
+          <variable name="effective_caller_id_number" value="${user.phone}"/>
         </variables>
       </user>
     </domain>

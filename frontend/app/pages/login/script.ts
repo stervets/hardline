@@ -47,20 +47,18 @@ export default defineComponent({
 
     async onSubmit(this: any) {
       this.error = ''
-      const ok = await this.formRef?.validate?.().catch(() => false)
-      if (!ok) return
+
+      if (!(await this.$refs.formRef?.validate?.().catch(() => false)))return;
 
       this.loading = true
       try {
         const phone = Number(this.form.phone)
         const password = this.form.password
 
-        // TODO: подключишь свой api client / $fetch
-        const res = await $fetch('/auth/login', {
-          method: 'POST',
-          body: { phone, password },
-        }) as any
+        const res = await application.serverRequest('auth/login', phone, password);
 
+        console.log(222, res);
+        return;
         const token = res?.accessToken
         if (!token) throw new Error('Сервер не вернул токен')
 

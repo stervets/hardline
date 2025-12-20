@@ -48,6 +48,12 @@ export default {
       }
     });
 
+    application.serverRequest = (endPoint: string, ...args: any[]) => {
+      if (!endPoint?.length) return null;
+      endPoint[0] === '/' && (endPoint = endPoint.substring(1));
+      return $fetch(`${application.config.host}/${endPoint}`, {method: 'POST', body: args}) as any
+    };
+
     const onApplicationStateChange = () => {
       localStorage.setItem(LOCAL_STORAGE_NAME, JSON.stringify(application.store));
     };
@@ -77,7 +83,7 @@ export default {
   methods: {
     async onRouteChanged(this: any) {
       const page = this.$nuxt.$router.currentRoute.value.name.split('_')[0];
-      this.layout = Object.entries(LAYOUTS).find(([_, pages])=>pages.includes(page))?.[0] || 'main';
+      this.layout = Object.entries(LAYOUTS).find(([_, pages]) => pages.includes(page))?.[0] || 'main';
       Object.entries(LAYOUTS);
 
       if (application.state.isAuthorized) return;
@@ -87,7 +93,7 @@ export default {
 
       if (pageRequiresAuthorization) {
         try {
-          console.log(123,  application.config.host);
+          console.log(123, application.config.host);
         } catch (e: any) {
           console.error(e.message);
           this.logout(fullPath);

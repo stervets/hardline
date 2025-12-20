@@ -16,6 +16,7 @@
         </div>
 
         <el-form
+            ref="formRef"
             :model="form"
             :rules="rules"
             label-position="top"
