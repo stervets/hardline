@@ -1,5 +1,5 @@
 <template>
-  <div class="hl-login min-h-screen w-full flex items-center justify-center px-4">
+  <div class="page page-login min-h-screen w-full flex items-center justify-center px-4">
     <div class="hl-bg absolute inset-0"></div>
 
     <div class="relative w-full max-w-md">

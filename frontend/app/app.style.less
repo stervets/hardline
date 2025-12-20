@@ -22,8 +22,32 @@ html, body, #__nuxt, #__nuxt > div {
   overflow: hidden;
   //font-family: "JetBrains Mono", "Fira Code", monospace;
   //font-size: 14px;
+  color: aliceblue;
+}
+
+.page{
+  position: relative;
 }
 
 .el-card{
   color: aliceblue !important;
+}
+
+.hl-card {
+  background: rgba(18, 24, 41, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(14px);
+}
+
+.hl-badge {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.el-input__wrapper, .el-alert {
+  background: rgba(255, 255, 255, 0.1) !important;
+  .el-input__inner{
+    color: aliceblue;
+  }
 }
