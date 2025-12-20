@@ -51,3 +51,28 @@ html, body, #__nuxt, #__nuxt > div {
     color: aliceblue;
   }
 }
+
+//.el-table {
+//  --el-table-bg-color: transparent;
+//  --el-table-tr-bg-color: transparent;
+//  --el-table-header-bg-color: transparent;
+//}
+
+.el-table, .el-table tr{
+ background: rgba(0,0,0,0) !important;
+}
+
+.el-table {
+  border-radius: 4px;
+}
+
+.el-table th, .el-table td{
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: aliceblue;
+}
+
+.el-table__row, .el-table__inner-wrapper:before {
+  background-color: transparent !important;
+  //background-color: rgba(255, 255, 255, 0.1) !important;
+}

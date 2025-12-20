@@ -1,6 +1,6 @@
 import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { type User } from 'src/types';
+import { type Request, type User } from 'src/types';
 import { JwtGuard } from 'src/auth/jwt.guard';
 import { config } from 'src/config';
 
@@ -18,7 +18,7 @@ export class AuthController {
 
   @UseGuards(JwtGuard)
   @Post('/auth/refreshToken')
-  usersList(@Req() {phone}: User) {
-    return this.auth.refreshToken(phone);
+  usersList(@Req() { user }: Request) {
+    return this.auth.refreshToken(user);
   }
 }

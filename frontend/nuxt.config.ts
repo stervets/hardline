@@ -27,4 +27,8 @@ export default defineNuxtConfig({
       ...config
     },
   },
+
+  elementPlus: {
+    themes: ['dark']
+  },
 })

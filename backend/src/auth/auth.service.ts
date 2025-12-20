@@ -1,6 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { config } from 'src/config';
+import { User } from 'src/types';
 
 @Injectable()
 export class AuthService {
@@ -17,10 +18,8 @@ export class AuthService {
     return this.jwt.sign({ phone });
   }
 
-  refreshToken(phone: number) {
-    const user = config.store.users.find((x) => x.phone === phone);
-    if (!user) throw new UnauthorizedException('Номер не найден');
+  refreshToken(user: User) {
     user.isAdmin = config.adminPhone === user.phone;
-    return { user, token: this.jwt.sign({ phone }) };
+    return { user, token: this.jwt.sign({ phone: user.phone }) };
   }
 }
