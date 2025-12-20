@@ -12,16 +12,14 @@ export class JwtGuard implements CanActivate {
 
   canActivate(ctx: ExecutionContext): boolean {
     const req = ctx.switchToHttp().getRequest();
-    const h = String(req.headers.authorization || '');
-    const m = h.match(/^Bearer\s+(.+)$/i);
-    if (!m) throw new UnauthorizedException('no_token');
+    const token = String(req.headers.token || '');
+    if (!token) throw new UnauthorizedException('no token');
 
     try {
-      const payload = this.jwt.verify(m[1]);
-      req.user = payload; // { sub, phone, iat, exp }
+      req.phone = this.jwt.verify(token).phone;
       return true;
     } catch {
-      throw new UnauthorizedException('bad_token');
+      throw new UnauthorizedException('bad token');
     }
   }
 }

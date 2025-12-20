@@ -14,8 +14,9 @@ export class AppController {
   }
 
   @UseGuards(JwtGuard)
-  @Get('/usersList')
-  usersList() {
+  @Post('/usersList')
+  usersList(@Req() phone: number) {
+    console.log(phone);
     return config.store.users;
   }
 

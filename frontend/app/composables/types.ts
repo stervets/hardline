@@ -9,7 +9,7 @@ export type ApplicationState = { // vue.reactive in application
 };
 
 export type ApplicationStore = {
-  jwt: string
+  token: string
 }
 
 export type Application = {
@@ -21,7 +21,7 @@ export type Application = {
     serverRequest: (endPoint: string, ...args: any[])=>Promise<any>;
 }
 
-export type User = { phone: number; password: string; name: string };
+export type User = { phone: number; name?: string; password: string; isAdmin?: boolean };
 
 declare global {
     interface ComponentInstance extends ComponentPublicInstance {

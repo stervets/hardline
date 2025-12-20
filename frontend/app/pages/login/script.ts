@@ -1,10 +1,11 @@
-import { defineComponent } from 'vue'
+import {defineComponent} from 'vue'
+import application from "@/composables/application";
 
 export default defineComponent({
   name: 'HardlineLoginPage',
   setup() {
     return {
-      formRef: null as any,
+      formRef: ref(null),
       form: ref({
         phone: '',
         password: ''
@@ -15,7 +16,7 @@ export default defineComponent({
 
       rules: {
         phone: [
-          { required: true, message: 'Введи номер', trigger: 'blur' },
+          {required: true, message: 'Введи номер', trigger: 'blur'},
           {
             validator: (_: any, v: string, cb: any) => {
               const n = Number(v)
@@ -25,13 +26,13 @@ export default defineComponent({
             trigger: 'blur',
           },
         ],
-        password: [{ required: true, message: 'Введи пароль', trigger: 'blur' }],
+        password: [{required: true, message: 'Введи пароль', trigger: 'blur'}],
       } as any,
     }
   },
 
-  async mounted(this: any) {
-
+  created(): any {
+    application.store.token = '';
   },
 
   methods: {
@@ -48,24 +49,16 @@ export default defineComponent({
     async onSubmit(this: any) {
       this.error = ''
 
-      if (!(await this.$refs.formRef?.validate?.().catch(() => false)))return;
+      if (!(await this.$refs.formRef?.validate?.().catch(() => false))) return;
 
       this.loading = true
       try {
         const phone = Number(this.form.phone)
         const password = this.form.password
-
-        const res = await application.serverRequest('auth/login', phone, password);
-
-        console.log(222, res);
-        return;
-        const token = res?.accessToken
+        const token = await application.serverRequest('/auth/login', phone, password);
         if (!token) throw new Error('Сервер не вернул токен')
-
-        localStorage.setItem('hardline.jwt', token)
-
-        // TODO: редирект туда, где UI звонков
-        window.location.href = '/'
+        application.store.token = token;
+        application.route('list');
       } catch (e: any) {
         this.error = e?.data?.message || e?.message || 'Ошибка логина'
       } finally {

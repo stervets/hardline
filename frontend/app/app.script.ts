@@ -10,6 +10,7 @@ import type {
   User
 } from "@/composables/types";
 import {watch} from 'vue';
+import Application from "@/composables/application";
 
 export default {
   async setup() {
@@ -17,6 +18,10 @@ export default {
       application,
       layout: ref('unauthorized'),
       unwatchUserData: null,
+      logout() {
+        application.store.token = '';
+        application.route('login');
+      }
     };
 
     const ctx = getComponentInstance();
@@ -49,17 +54,22 @@ export default {
     });
 
     application.serverRequest = (endPoint: string, ...args: any[]) => {
-      if (!endPoint?.length) return null;
-      endPoint[0] === '/' && (endPoint = endPoint.substring(1));
-      return $fetch(`${application.config.host}/${endPoint}`, {method: 'POST', body: args}) as any
+      return $fetch(application.config.host + endPoint, {
+        method: 'POST',
+        headers: {token: Application.store.token},
+        body: args,
+        onResponseError: ({response}) => {
+          response.status === 401 && applicationVariables.logout();
+        }
+      }) as any
     };
 
-    const onApplicationStateChange = () => {
+    const onApplicationStoreChange = () => {
       localStorage.setItem(LOCAL_STORAGE_NAME, JSON.stringify(application.store));
     };
 
-    watch(application.store, onApplicationStateChange, {deep: true});
-    !store && onApplicationStateChange();
+    watch(application.store, onApplicationStoreChange, {deep: true});
+    !store && onApplicationStoreChange();
 
     return applicationVariables;
   },
@@ -93,17 +103,15 @@ export default {
 
       if (pageRequiresAuthorization) {
         try {
-          console.log(123, application.config.host);
+          const {user, token} = await application.serverRequest('/auth/refreshToken');
+          application.state.user = user;
+          application.store.token = token;
         } catch (e: any) {
           console.error(e.message);
           this.logout(fullPath);
           return;
         }
       }
-    },
-
-    logout(this: any, fullPath?: string) {
-      application.route('login' + (fullPath ? `?path=${fullPath}` : ''));
     }
   }
 }
