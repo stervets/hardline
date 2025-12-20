@@ -2,26 +2,6 @@
   "nextExt": 99006,
   "users": [
     {
-      "ext": 99005,
-      "name": "ll1",
-      "sipPassword": "ll2"
-    },
-    {
-      "ext": 99004,
-      "name": "ff1",
-      "sipPassword": "fff"
-    },
-    {
-      "ext": 99003,
-      "name": "zxc21",
-      "sipPassword": "asd31"
-    },
-    {
-      "ext": 99002,
-      "name": "zxc2",
-      "sipPassword": "asd3"
-    },
-    {
       "ext": 99001,
       "name": "zxc",
       "sipPassword": "asd"

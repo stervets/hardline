@@ -1,36 +1,10 @@
 export default {
+  props: [],
+  emits: [],
   setup() {
-    return {
-      displayName: '',
-      sipPassword: '',
-      result: null as any,
-
-      toCall: '99001',
-    };
+    return {};
   },
-
-  methods: {
-    async register(this: any) {
-      const r = await fetch('http://10.0.2.2:3000/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          displayName: this.displayName,
-          sipPassword: this.sipPassword,
-        }),
-      });
-
-      this.result = await r.json();
-      (window as any).Hardline?.register?.(this.result?.sip);
-    },
-
-    call(this: any) {
-      console.log(11, (window as any).Hardline);
-      (window as any).Hardline?.call?.(this.toCall);
-    },
-
-    hangup(this: any) {
-      (window as any).Hardline?.hangup?.();
-    },
-  },
+  created(this: any) {},
+  async mounted(this: any) {},
+  methods: {},
 };

@@ -3,7 +3,7 @@
     <div class="hl-bg absolute inset-0"></div>
 
     <div class="relative w-full max-w-md">
-      <div class="hl-card rounded-2xl shadow-2xl p-6 md:p-7">
+      <div class="hl-card rounded-2xl shadow-2xl p-6 md:p-8">
         <div class="flex items-center justify-between gap-4 mb-6">
           <div>
             <div class="text-2xl font-semibold tracking-tight">Hardline</div>
@@ -52,7 +52,7 @@
           <el-button
               type="primary"
               size="large"
-              class="w-full"
+              class="w-full mt-8"
               :loading="loading"
               @click="onSubmit"
           >

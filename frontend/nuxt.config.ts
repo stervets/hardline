@@ -1,5 +1,8 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
+import config from './config';
+
 export default defineNuxtConfig({
+  ssr: false,
+
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   devServer: {
@@ -9,6 +12,8 @@ export default defineNuxtConfig({
 
   plugins: [
     {src: './plugins/hardline.client.ts', mode: 'client'},
+    {src: './plugins/event-bus.ts', mode: 'client'},
+    {src: './plugins/dark-theme.ts', mode: 'client'},
   ],
 
   modules: [
@@ -16,4 +21,10 @@ export default defineNuxtConfig({
     '@nuxtjs/color-mode',
     '@element-plus/nuxt',
   ],
+
+  runtimeConfig: {
+    public: {
+      ...config
+    },
+  },
 })
