@@ -72,29 +72,17 @@ const pickKV = (body: any, wantedKey: string) => {
 export class FreeSwitchController {
   @Post('/freeswitch/xml')
   @HttpCode(200)
-  @Header('Content-Type', 'text/xml; charset=utf-8')
-  handle(@Req() req: any, @Body() body: any) {
-    const secret = req.headers['secret'];
-    console.log(111, req.headers);
-    console.log(222, secret);
-    //if (!secret || secret !== config.secret) throw new UnauthorizedException();
-    const section =
-      pick(body, 'section') ?? pickKV(body, 'section') ?? 'unknown';
+  handle(@Req() req: any, @Body() raw: any) {
+    console.log(111, raw);
+    const text = typeof raw === 'string' ? raw : '';
+    const vars = text.includes('=')
+      ? Object.fromEntries(new URLSearchParams(text))
+      : {};
 
-    if (section === 'configuration') {
-      return (
-        xmlHeader +
-        `<document type="freeswitch/xml"><section name="configuration"/></document>`
-      );
-    }
+    // на всякий — FS иногда может прислать query
+    Object.assign(vars, req.query ?? {});
 
-    if (section === 'directory') return this.directory(body);
-    if (section === 'dialplan') return this.dialplan();
-
-    return (
-      xmlHeader +
-      `<document type="freeswitch/xml"><section name="${escapeXml(section)}"/></document>`
-    );
+    // дальше работаешь с vars как с обычным body
   }
 
   private directory(body: any) {

@@ -8,10 +8,10 @@ import { AppService } from 'src/app/app.service';
 export class AppController {
   constructor(private readonly app: AppService) {}
 
-  // @Get()
-  // index() {
-  //   return ``;
-  // }
+  @Get()
+  index() {
+    return `ok\n`;
+  }
 
   @UseGuards(JwtGuard)
   @Post('/users/list')

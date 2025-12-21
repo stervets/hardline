@@ -7,6 +7,9 @@ services:
       - SYS_NICE
     ulimits:
       rtprio: 99
+    depends_on:
+      backend:
+        condition: service_healthy
     ports:
       - "${SIP_UDP_PORT:-5060}:${SIP_UDP_PORT:-5060}/udp"
       - "20000-20100:20000-20100/udp"
@@ -17,26 +20,37 @@ services:
       - SIP_CONTEXT=${SIP_CONTEXT:-hardline}
     volumes:
       - ./data/sounds:/data/sounds:ro
-      - ./freeswitch/conf/autoload_configs/xml_curl.conf.xml:/usr/share/freeswitch/conf/vanilla/autoload_configs/xml_curl.conf.xml:ro
-      - ./freeswitch/conf/autoload_configs/switch.conf.xml:/usr/share/freeswitch/conf/vanilla/autoload_configs/switch.conf.xml:ro
-      - ./freeswitch/conf/autoload_configs/modules.conf.xml:/usr/share/freeswitch/conf/vanilla/autoload_configs/modules.conf.xml:ro
-      - ./freeswitch/conf/autoload_configs/signalwire.conf.xml:/usr/share/freeswitch/conf/vanilla/autoload_configs/signalwire.conf.xml:ro
-      - ./freeswitch/conf/autoload_configs/event_socket.conf.xml:/usr/share/freeswitch/conf/vanilla/autoload_configs/event_socket.conf.xml:ro
-      - ./freeswitch/conf/sip_profiles:/usr/share/freeswitch/conf/vanilla/sip_profiles:ro
-      - ./freeswitch/conf/dialplan:/usr/share/freeswitch/conf/vanilla/dialplan:ro
+
+      - ./freeswitch/conf/autoload_configs/xml_curl.conf.xml:/etc/freeswitch/autoload_configs/xml_curl.conf.xml:ro
+      - ./freeswitch/conf/autoload_configs/switch.conf.xml:/etc/freeswitch/autoload_configs/switch.conf.xml:ro
+      - ./freeswitch/conf/autoload_configs/modules.conf.xml:/etc/freeswitch/autoload_configs/modules.conf.xml:ro
+      - ./freeswitch/conf/autoload_configs/signalwire.conf.xml:/etc/freeswitch/autoload_configs/signalwire.conf.xml:ro
+      - ./freeswitch/conf/autoload_configs/event_socket.conf.xml:/etc/freeswitch/autoload_configs/event_socket.conf.xml:ro
+
+      - ./freeswitch/conf/sip_profiles:/etc/freeswitch/sip_profiles:ro
+      - ./freeswitch/conf/dialplan:/etc/freeswitch/dialplan:ro
+
     networks:
       - hardline
-    command: ["freeswitch", "-nf"]
+    command: [ "freeswitch", "-nf" ]
 
   backend:
     build:
       context: ./backend
       target: dev
-    profiles: ["dev"]
+    profiles: [ "dev" ]
     container_name: hardline-backend-dev
     restart: unless-stopped
-    depends_on:
-      - freeswitch
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "node -e \"require('http').get('http://127.0.0.1:3000/', r => process.exit(r.statusCode===200?0:1)).on('error', ()=>process.exit(1))\""
+        ]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+      start_period: 10s
     ports:
       - "${PUBLIC_PORT:-3000}:3000"
     environment:
@@ -53,17 +67,25 @@ services:
       - ./data:/data
     networks:
       - hardline
-    command: ["yarn", "run", "dev"]
+    command: [ "yarn", "run", "dev" ]
 
   backend-prod:
     build:
       context: ./backend
       target: prod
-    profiles: ["prod"]
+    profiles: [ "prod" ]
     container_name: hardline-backend
     restart: unless-stopped
-    depends_on:
-      - freeswitch
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "node -e \"require('http').get('http://127.0.0.1:3000/', r => process.exit(r.statusCode===200?0:1)).on('error', ()=>process.exit(1))\""
+        ]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+      start_period: 10s
     ports:
       - "${PUBLIC_PORT:-3000}:3000"
     environment:
