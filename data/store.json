@@ -9,6 +9,12 @@
       "phone": 99000,
       "name": "Mike Admin",
       "password": "123"
+    },
+
+    {
+      "phone": 99999,
+      "name": "Test sound",
+      "password": ""
     }
   ]
 }

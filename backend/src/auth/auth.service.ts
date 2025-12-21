@@ -10,6 +10,8 @@ export class AuthService {
   login(phone: number, password: string) {
     if (phone < 99000 || phone > 99989)
       throw new UnauthorizedException('Bad phone');
+    if (!password.trim())
+      throw new UnauthorizedException('Bad password');
 
     const user = config.store.users.find((x) => x.phone === phone);
     if (!user || user.password !== password)
@@ -20,6 +22,12 @@ export class AuthService {
 
   refreshToken(user: User) {
     user.isAdmin = config.adminPhone === user.phone;
-    return { user, token: this.jwt.sign({ phone: user.phone }) };
+    return {
+      user,
+      token: this.jwt.sign({ phone: user.phone }),
+      host: config.host,
+      port: config.port,
+      realm: config.realm,
+    };
   }
 }

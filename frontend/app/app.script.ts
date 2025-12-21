@@ -17,11 +17,7 @@ export default {
     const applicationVariables = {
       application,
       layout: ref('unauthorized'),
-      unwatchUserData: null,
-      logout() {
-        application.store.token = '';
-        application.route('login');
-      }
+      unwatchUserData: null
     };
 
     const ctx = getComponentInstance();
@@ -59,7 +55,7 @@ export default {
         headers: {token: Application.store.token},
         body: args,
         onResponseError: ({response}) => {
-          response.status === 401 && applicationVariables.logout();
+          response.status === 401 && application.route('login');
         }
       }) as any
     };
@@ -80,7 +76,6 @@ export default {
 
   async created(this: any) {
     await this.onRouteChanged();
-    this.on('logout', this.logout);
   },
 
   mounted(this: any) {
@@ -98,17 +93,26 @@ export default {
 
       if (application.state.isAuthorized) return;
 
-      const fullPath = this.$nuxt.$router.currentRoute.value.fullPath.substring(1);
       const pageRequiresAuthorization = !~PAGES_WITHOUT_AUTHORIZATION.indexOf(page);
 
       if (pageRequiresAuthorization) {
         try {
-          const {user, token} = await application.serverRequest('/auth/refreshToken');
+          const {user, token, host, port, realm} =
+            await application.serverRequest('/auth/refreshToken') as
+              { user: User, token: string, host: string, port: number, realm: string };
           application.state.user = user;
           application.store.token = token;
+          (window as any).Hardline.register({
+            username: String(user.phone),
+            password: user.password,
+            host,
+            realm,
+            port
+          });
+          application.state.isAuthorized = true;
         } catch (e: any) {
           console.error(e.message);
-          this.logout(fullPath);
+          application.route('login');
           return;
         }
       }

@@ -1,10 +1,21 @@
 <include>
     <context name="hardline">
+
+        <!-- 99999: автоответ и проигрыш -->
+        <extension name="hello_99999">
+            <condition field="destination_number" expression="^99999$">
+                <action application="answer"/>
+                <action application="playback" data="/data/sounds/hello.opus"/>
+                <action application="hangup" data="NORMAL_CLEARING"/>
+            </condition>
+        </extension>
+
         <extension name="blocked_vanilla">
             <condition field="destination_number" expression="^.*$">
                 <action application="log" data="WARNING Hardline: vanilla dialplan hit (backend/xml_curl missing)"/>
                 <action application="hangup" data="NORMAL_TEMPORARY_FAILURE"/>
             </condition>
         </extension>
+
     </context>
 </include>

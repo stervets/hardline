@@ -1,4 +1,12 @@
-import { Body, Controller, Header, HttpCode, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Header,
+  HttpCode,
+  Post,
+  Req,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { config } from '../config';
 
 const xmlHeader = `<?xml version="1.0" encoding="UTF-8"?>\n`;
@@ -63,11 +71,22 @@ const pickKV = (body: any, wantedKey: string) => {
 @Controller()
 export class FreeSwitchController {
   @Post('/freeswitch/xml')
-  @HttpCode(200) // <-- ДОБАВЬ ЭТО
+  @HttpCode(200)
   @Header('Content-Type', 'text/xml; charset=utf-8')
-  handle(@Body() body: any) {
+  handle(@Req() req: any, @Body() body: any) {
+    const secret = req.headers['secret'];
+    console.log(111, req.headers);
+    console.log(222, secret);
+    //if (!secret || secret !== config.secret) throw new UnauthorizedException();
     const section =
       pick(body, 'section') ?? pickKV(body, 'section') ?? 'unknown';
+
+    if (section === 'configuration') {
+      return (
+        xmlHeader +
+        `<document type="freeswitch/xml"><section name="configuration"/></document>`
+      );
+    }
 
     if (section === 'directory') return this.directory(body);
     if (section === 'dialplan') return this.dialplan();
@@ -79,57 +98,9 @@ export class FreeSwitchController {
   }
 
   private directory(body: any) {
-    // 1) userId: прямые поля
-    const directUser = pick(
-      body,
-      'user',
-      'username',
-      'id',
-      'sip_auth_username',
-      'auth_user',
-    );
-
-    // 2) userId: key/key_value пара
-    const kvUser =
-      pickKV(body, 'user') ?? pickKV(body, 'username') ?? pickKV(body, 'id');
-
-    // 3) иногда подсовывают "Caller-Caller-ID-Number"/"from_user" — берём только если совсем нет другого
-    const fallbackUser = pick(
-      body,
-      'from_user',
-      'Caller-Caller-ID-Number',
-      'caller_id_number',
-    );
-
-    const userIdRaw = directUser ?? kvUser ?? fallbackUser ?? null;
-    const { user: userOnly, domain: domainFromUser } =
-      splitUserAtDomain(userIdRaw);
-    const ext = asNumber(userOnly);
-
-    // domain/realm:
-    const directDomain = pick(
-      body,
-      'domain',
-      'realm',
-      'sip_auth_realm',
-      'sip_realm',
-      'auth_realm',
-      'sip_to_host',
-      'to_host',
-    );
-
-    const kvDomain =
-      pickKV(body, 'domain') ??
-      pickKV(body, 'realm') ??
-      pickKV(body, 'sip_auth_realm') ??
-      pickKV(body, 'sip_realm');
-
-    // если FS сам решил доменом быть контейнерным IP — он как раз здесь всплывёт
-    const domain = (directDomain ??
-      kvDomain ??
-      domainFromUser ??
-      config.realm)!;
-
+    console.log(111, body);
+    const userId = asString(body?.sip_auth_username) ?? asString(body?.user);
+    const ext = asNumber(userId);
     if (!ext) return this.notFound();
 
     const user = config.store.users.find((u) => u.phone === ext);
@@ -137,18 +108,19 @@ export class FreeSwitchController {
 
     const name = escapeXml(user.name || `${user.phone}`);
     const pass = escapeXml(user.password);
+    const domain = escapeXml(config.realm);
 
     return (
       xmlHeader +
       `<document type="freeswitch/xml">
   <section name="directory">
-    <domain name="${escapeXml(domain)}">
+    <domain name="${domain}">
       <user id="${user.phone}">
         <params>
           <param name="password" value="${pass}"/>
         </params>
         <variables>
-          <variable name="user_context" value="${escapeXml(config.userContext)}"/>
+          <variable name="user_context" value="${escapeXml(config.context)}"/>
           <variable name="effective_caller_id_name" value="${name}"/>
           <variable name="effective_caller_id_number" value="${user.phone}"/>
         </variables>
@@ -173,13 +145,13 @@ export class FreeSwitchController {
   private dialplan() {
     const svcEcho = config.svcEcho;
     const svcPlayback = config.svcPlayback;
-    const playbackFile = '/var/lib/freeswitch/sounds/custom/hello.opus';
+    const playbackFile = '/data/sounds/hello.opus';
 
     return (
       xmlHeader +
       `<document type="freeswitch/xml">
   <section name="dialplan">
-    <context name="${escapeXml(config.userContext)}">
+    <context name="${escapeXml(config.context)}">
 
       <extension name="reserved_star">
         <condition field="destination_number" expression="^\\*(00[0-9]|999)$">

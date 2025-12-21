@@ -4,12 +4,14 @@ import fs from 'node:fs';
 const storePath = process.env.STORE_PATH || '/data/store.json';
 
 export const config = {
-  userContext: 'hardline',
-
   store: JSON.parse(fs.readFileSync(storePath, 'utf-8')) as Store,
 
-  host: process.env.HARDLINE_HOST || '10.0.2.2',
-  realm: process.env.HARDLINE_REALM || 'hardline.local',
+  context: process.env.SIP_CONTEXT || 'hardline',
+  host: process.env.PUBLIC_HOST || '192.168.2.70',
+  realm: process.env.SIP_REALM || 'hardline.local',
+  port: process.env.SIP_UDP_PORT || 5060,
+
+  secret: process.env.JWT_SECRET || '2aae6e4e356e18179e73093947ff3',
 
   adminPhone: 99000,
   svcEcho: 99990,

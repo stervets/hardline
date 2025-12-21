@@ -2,9 +2,9 @@ import {type PublicRuntimeConfig} from "@nuxt/schema";
 import {type ComponentPublicInstance} from "vue";
 
 export type ApplicationState = { // vue.reactive in application
-    isAuthorized: boolean;
-    isLoading: boolean;
-    users: User[],
+    isAuthorized: boolean
+    isLoading: boolean
+    users: User[]
     user: User
 };
 
@@ -21,7 +21,20 @@ export type Application = {
     serverRequest: (endPoint: string, ...args: any[])=>Promise<any>;
 }
 
-export type User = { phone: number; name?: string; password: string; isAdmin?: boolean };
+export type User = {
+  phone: number
+  name?: string
+  password: string
+  isAdmin?: boolean
+};
+
+export type SipBundle = {
+  username: string
+  password: string
+  host: string
+  realm: string
+  port: number
+}
 
 declare global {
     interface ComponentInstance extends ComponentPublicInstance {

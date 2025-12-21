@@ -1,32 +1,28 @@
-export default defineNuxtPlugin(() => {
-  const hasNative = () =>
-    typeof (window as any).HardlineNative?.call === 'function';
+import {emit} from '@/composables/event-bus'
 
-  (window as any).Hardline = {
-    register: (creds: any) => {
-      if (hasNative())
-        (window as any).HardlineNative.register(JSON.stringify(creds));
-      else console.log('[Hardline] register', creds);
-    },
-    call: (num: string) => {
-      if (hasNative())
-        (window as any).HardlineNative.call(num);
-      else console.log('[Hardline] call', num);
-    },
-    hangup: () =>
-      hasNative()
-        ? (window as any).HardlineNative.hangup()
-        : console.log('[Hardline] hangup'),
-    answer: () =>
-      hasNative()
-        ? (window as any).HardlineNative.answer()
-        : console.log('[Hardline] answer'),
-    setMute: (mute: boolean) =>
-      hasNative()
-        ? (window as any).HardlineNative.setMute(mute)
+export default defineNuxtPlugin(() => {
+  const win = window as any;
+  const hasNative = () => typeof win.HardlineNative?.call === 'function';
+
+  win.Hardline = {
+    register: (creds: any) => hasNative() ? win.HardlineNative.register(JSON.stringify(creds)) :
+        console.log('[Hardline] register', creds),
+
+    call: (num: string) => hasNative() ? win.HardlineNative.call(num) :
+        console.log('[Hardline] call', num),
+
+    hangup: () => hasNative() ? win.HardlineNative.hangup()
+      : console.log('[Hardline] hangup'),
+
+    answer: () => hasNative() ? win.HardlineNative.answer()
+      : console.log('[Hardline] answer'),
+
+    setMute: (mute: boolean) => hasNative() ? win.HardlineNative.setMute(mute)
         : console.log('[Hardline] mute', mute),
   };
 
-  (window as any).onHardlineEvent = (e: any) =>
+  win.onHardlineEvent = (e: any) => {
     console.log('[Hardline event]', JSON.stringify(e, null, 2));
+    emit('hardline:event', e)
+  }
 });

@@ -33,6 +33,8 @@ export default defineComponent({
 
   created(): any {
     application.store.token = '';
+    application.state.user = {} as User;
+    application.state.isAuthorized = false;
   },
 
   methods: {

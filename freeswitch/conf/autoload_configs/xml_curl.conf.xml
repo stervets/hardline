@@ -2,9 +2,18 @@
     <bindings>
         <binding name="directory">
             <param name="gateway-url" value="http://backend:3000/freeswitch/xml"/>
+            <param name="method" value="post"/>
+            <param name="timeout" value="3"/>
+            <param name="enable-post-var" value="true"/>
+            <param name="http-header" value="secret: $${FS_SECRET}"/>
         </binding>
+
         <binding name="dialplan">
             <param name="gateway-url" value="http://backend:3000/freeswitch/xml"/>
+            <param name="method" value="post"/>
+            <param name="timeout" value="3"/>
+            <param name="enable-post-var" value="true"/>
+            <param name="http-header" value="secret: $${FS_SECRET}"/>
         </binding>
     </bindings>
 </configuration>

@@ -1,6 +1,8 @@
 import { defineComponent } from 'vue'
 import application from '@/composables/application'
 
+type UserRow = { phone: string; name?: string }
+
 export default defineComponent({
   name: 'HardlineListPage',
   setup() {
@@ -9,6 +11,7 @@ export default defineComponent({
       loading: ref(false),
       error: ref(''),
       users: computed(() => application.state.users || []),
+      selectedUser: ref<UserRow | null>(null),
     }
   },
 
@@ -31,8 +34,22 @@ export default defineComponent({
     },
 
     onLogout(this: any) {
-      application.store.token = ''
-      application.route('login')
+      application.route('login');
+    },
+
+    onRowClick(this: any, row: UserRow) {
+      // клик по той же строке — снять выбор
+      if (this.selectedUser?.phone === row.phone) this.selectedUser = null
+      else this.selectedUser = row
+    },
+
+    rowClassName(this: any, { row }: any) {
+      return this.selectedUser?.phone === row.phone ? 'hl-row-selected' : ''
+    },
+
+    onCallSelected(this: any) {
+      if (!this.selectedUser?.phone) return
+      application.route(`call/${this.selectedUser.phone}`)
     },
   },
-})
+});

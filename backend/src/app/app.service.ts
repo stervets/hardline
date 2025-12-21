@@ -32,7 +32,8 @@ export class AppService {
     if (!user.isAdmin) throw new UnauthorizedException('admin access required');
     delUser = config.store.users.find((u) => u.phone === delUser.phone) as User;
     if (!delUser) throw new BadRequestException('user not found');
-    if (delUser.phone === user.phone) throw new BadRequestException('can\'t delete yourself');
+    if (delUser.phone === user.phone)
+      throw new BadRequestException("can't delete yourself");
     config.store.users.splice(config.store.users.indexOf(delUser), 1);
     saveStore();
     return true;
@@ -44,8 +45,11 @@ export class AppService {
       (u) => u.phone === editUser.phone,
     ) as User;
     if (!storedUser) throw new BadRequestException('user not found');
-    if (!editUser.password) throw new BadRequestException('password can\'t be empty');
-    if (!editUser.name) throw new BadRequestException('name can\'t be empty');
+    editUser.password = (editUser.password || '').trim();
+    editUser.name = (editUser.name || '').trim();
+    if (!editUser.password)
+      throw new BadRequestException("password can't be empty");
+    if (!editUser.name) throw new BadRequestException("name can't be empty");
     Object.assign(storedUser, editUser);
     saveStore();
     return true;

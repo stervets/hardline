@@ -8,20 +8,25 @@ services:
     ulimits:
       rtprio: 99
     ports:
-      - "${SIP_UDP_PORT:-5060}:5060/udp"
+      - "${SIP_UDP_PORT:-5060}:${SIP_UDP_PORT:-5060}/udp"
       - "20000-20100:20000-20100/udp"
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+      - SIP_UDP_PORT=${SIP_UDP_PORT:-5060}
+      - SIP_REALM=${SIP_REALM:-hardline.local}
+      - SIP_CONTEXT=${SIP_CONTEXT:-hardline}
     volumes:
-      - ./data/sounds:/var/lib/freeswitch/sounds/custom:ro
-
+      - ./data/sounds:/data/sounds:ro
       - ./freeswitch/conf/autoload_configs/xml_curl.conf.xml:/usr/share/freeswitch/conf/vanilla/autoload_configs/xml_curl.conf.xml:ro
       - ./freeswitch/conf/autoload_configs/switch.conf.xml:/usr/share/freeswitch/conf/vanilla/autoload_configs/switch.conf.xml:ro
       - ./freeswitch/conf/autoload_configs/modules.conf.xml:/usr/share/freeswitch/conf/vanilla/autoload_configs/modules.conf.xml:ro
       - ./freeswitch/conf/autoload_configs/signalwire.conf.xml:/usr/share/freeswitch/conf/vanilla/autoload_configs/signalwire.conf.xml:ro
       - ./freeswitch/conf/autoload_configs/event_socket.conf.xml:/usr/share/freeswitch/conf/vanilla/autoload_configs/event_socket.conf.xml:ro
+      - ./freeswitch/conf/sip_profiles:/usr/share/freeswitch/conf/vanilla/sip_profiles:ro
       - ./freeswitch/conf/dialplan:/usr/share/freeswitch/conf/vanilla/dialplan:ro
     networks:
       - hardline
-    command: ["freeswitch", "-nonat", "-nf"]
+    command: ["freeswitch", "-nf"]
 
   backend:
     build:
@@ -39,9 +44,9 @@ services:
       - PUBLIC_HOST=${PUBLIC_HOST}
       - PUBLIC_PORT=${PUBLIC_PORT}
       - JWT_SECRET=${JWT_SECRET}
-      - FS_HOST=freeswitch
-      - FS_SIP_PORT=5060
-      - HARDLINE_DOMAIN=hardline.local
+      - SIP_UDP_PORT=${SIP_UDP_PORT}
+      - SIP_REALM=${SIP_REALM}
+      - SIP_CONTEXT=${SIP_CONTEXT}
       # если у тебя backend реально использует другой URL/параметры — вернёшь свои
     volumes:
       - ./backend:/app
@@ -66,9 +71,9 @@ services:
       - PUBLIC_HOST=${PUBLIC_HOST}
       - PUBLIC_PORT=${PUBLIC_PORT}
       - JWT_SECRET=${JWT_SECRET}
-      - FS_HOST=freeswitch
-      - FS_SIP_PORT=5060
-      - HARDLINE_DOMAIN=hardline.local
+      - SIP_UDP_PORT=${SIP_UDP_PORT}
+      - SIP_REALM=${SIP_REALM}
+      - SIP_CONTEXT=${SIP_CONTEXT}
     volumes:
       - ./data:/data
     networks:
