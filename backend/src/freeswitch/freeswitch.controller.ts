@@ -72,23 +72,31 @@ const pickKV = (body: any, wantedKey: string) => {
 export class FreeSwitchController {
   @Post('/freeswitch/xml')
   @HttpCode(200)
-  handle(@Req() req: any, @Body() raw: any) {
-    console.log(111, raw);
-    const text = typeof raw === 'string' ? raw : '';
-    const vars = text.includes('=')
-      ? Object.fromEntries(new URLSearchParams(text))
-      : {};
+  @Header('Content-Type', 'text/xml; charset=utf-8')
+  handle(@Req() req: any, @Body() body: any) {
+    const section =
+      pick(body, 'section') ?? pickKV(body, 'section') ?? 'unknown';
 
-    // на всякий — FS иногда может прислать query
-    Object.assign(vars, req.query ?? {});
+    let result = `${xmlHeader}<document type="freeswitch/xml"><section name="${escapeXml(section)}"/></document>`;
+    const accessGranted = config.secret === req.query.secret;
+    console.log(
+      0,
+      config.secret === req.query.secret,
+      section === 'directory',
+      config.secret, req.query.secret,
 
-    // дальше работаешь с vars как с обычным body
+    );
+
+    section === 'directory' && accessGranted && (result = this.directory(body));
+    section === 'dialplan' && accessGranted && (result = this.dialplan());
+
+    return result;
   }
 
   private directory(body: any) {
-    console.log(111, body);
     const userId = asString(body?.sip_auth_username) ?? asString(body?.user);
     const ext = asNumber(userId);
+    console.log(44, body, ext);
     if (!ext) return this.notFound();
 
     const user = config.store.users.find((u) => u.phone === ext);
@@ -98,9 +106,7 @@ export class FreeSwitchController {
     const pass = escapeXml(user.password);
     const domain = escapeXml(config.realm);
 
-    return (
-      xmlHeader +
-      `<document type="freeswitch/xml">
+    const result = `${xmlHeader}<document type="freeswitch/xml">
   <section name="directory">
     <domain name="${domain}">
       <user id="${user.phone}">
@@ -115,8 +121,9 @@ export class FreeSwitchController {
       </user>
     </domain>
   </section>
-</document>`
-    );
+</document>`;
+    console.log(111, result);
+    return result;
   }
 
   private notFound() {
@@ -135,9 +142,8 @@ export class FreeSwitchController {
     const svcPlayback = config.svcPlayback;
     const playbackFile = '/data/sounds/hello.opus';
 
-    return (
-      xmlHeader +
-      `<document type="freeswitch/xml">
+    const result =
+      `${xmlHeader}<document type="freeswitch/xml">
   <section name="dialplan">
     <context name="${escapeXml(config.context)}">
 
@@ -170,7 +176,9 @@ export class FreeSwitchController {
 
     </context>
   </section>
-</document>`
-    );
+</document>`;
+
+    console.log(222, result);
+    return result;
   }
 }

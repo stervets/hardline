@@ -1,19 +1,11 @@
 <configuration name="xml_curl.conf" description="Hardline XML Curl">
     <bindings>
         <binding name="directory">
-            <param name="gateway-url" value="http://hardline-backend-dev:3000/freeswitch/xml"/>
-            <param name="method" value="post"/>
-            <param name="timeout" value="3"/>
-            <param name="enable-post-var" value="true"/>
-            <param name="http-header" value="secret: $${FS_SECRET}"/>
+            <param name="gateway-url" value="http://backend:3000/freeswitch/xml?secret=7fc2613c0ae2cd88ce593c3865821830ccd6a218709ad7c8c3902acdafc43b07"/>
         </binding>
 
         <binding name="dialplan">
-            <param name="gateway-url" value="http://hardline-backend-dev:3000/freeswitch/xml"/>
-            <param name="method" value="post"/>
-            <param name="timeout" value="3"/>
-            <param name="enable-post-var" value="true"/>
-            <param name="http-header" value="secret: $${FS_SECRET}"/>
+            <param name="gateway-url" value="http://backend:3000/freeswitch/xml?secret=7fc2613c0ae2cd88ce593c3865821830ccd6a218709ad7c8c3902acdafc43b07"/>
         </binding>
     </bindings>
 </configuration>

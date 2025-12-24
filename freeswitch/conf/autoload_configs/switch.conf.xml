@@ -2,7 +2,7 @@
     <X-PRE-PROCESS cmd="set" data="SIP_UDP_PORT=${SIP_UDP_PORT}"/>
     <X-PRE-PROCESS cmd="set" data="SIP_REALM=${SIP_REALM}"/>
     <X-PRE-PROCESS cmd="set" data="SIP_CONTEXT=${SIP_CONTEXT}"/>
-    <X-PRE-PROCESS cmd="set" data="FS_SECRET=${JWT_SECRET}"/>
+    <X-PRE-PROCESS cmd="set" data="JWT_SECRET=${JWT_SECRET}"/>
     <settings>
         <param name="rtp-start-port" value="20000"/>
         <param name="rtp-end-port" value="20100"/>

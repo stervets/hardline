@@ -1,5 +1,6 @@
 services:
   freeswitch:
+    read_only: false
     image: safarov/freeswitch:1.10.12
     container_name: hardline-freeswitch
     restart: unless-stopped
